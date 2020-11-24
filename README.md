@@ -39,7 +39,195 @@ Example:
 | facebook.com | `27d27d27d29d27d1dc41d43d00041d741011a7be03d7498e0df05581db08a9` |
 | instagram.com | `27d27d27d29d27d1dc41d43d00041d741011a7be03d7498e0df05581db08a9` |
 | oculus.com | `29d29d20d29d29d21c41d43d00041d741011a7be03d7498e0df05581db08a9` |  
-  
+
+### Run JARM asyncio version
+`python3 jarm_async.py [-h] [--stdin] [-t str [str ...]] [-f str] [-o str] [--json] [--csv] [-s int] [--queue-sleep int] [-tconnect int] [-tread int] [-tresolver int] [-p int] [--filter-jarm str]
+                     [--filter-cipher-tls str] [--show-only-success] [--show-statistics]`
+                     
+Targets: ipv4, ipv4:port, fqdn like youtube.com, facebook.com, google.com:443, network CIDR notation 
+like 173.194.221.0/24 or with port 173.194.221.0/24:443
+
+#####You can set source targets in 3 ways:
+
+A. Argument --stdin. Read targets from /dev/stdin
+
+```
+cat alexa500.txt | python3 jarm_async.py --stdin
+```
+
+```
+zmap 173.194.0.0/16 -B 10M -q -v 1 -p 443 -P1 | python3 jarm_async.py --stdin
+```
+
+B. Argument -t(--targets). Read targets from arguments
+
+```
+python3 jarm_async.py -t google.com youtube.com 173.194.221.0/24:443 --show-only-success --show-statistics
+```
+
+```json
+{"duration":7.12016,"valid targets":258,"success":92,"fails":166}
+```
+###### results (some of the successfuls), output format json (default):
+
+```json
+{"ip":"173.194.73.93",
+   "port":443,
+   "hostname":"youtube.com",
+   "data":{
+      "jarm":{
+         "ipaddress":{
+            "jarm":"29d3fd00029d29d21c42d43d00041df48f145f65c66577d0b01ecea881c1ba",
+            "cipher_tls":"29d3fd00029d29d21c42d43d00041d",
+            "sha256_of_tls_ext":"f48f145f65c66577d0b01ecea881c1ba",
+            "len":62
+         },
+         "hostname":{
+            "jarm":"27d40d40d29d40d1dc42d43d00041d4689ee210389f4f6b4b5b1b93f92252d",
+            "cipher_tls":"27d40d40d29d40d1dc42d43d00041d",
+            "sha256_of_tls_ext":"4689ee210389f4f6b4b5b1b93f92252d",
+            "len":62
+         },
+         "status":"success"
+      }
+   }
+}
+```
+```json
+{
+   "ip":"173.194.221.180",
+   "port":443,
+   "data":{
+      "jarm":{
+         "ipaddress":{
+            "jarm":"29d3fd00029d29d21c42d43d00041df48f145f65c66577d0b01ecea881c1ba",
+            "cipher_tls":"29d3fd00029d29d21c42d43d00041d",
+            "sha256_of_tls_ext":"f48f145f65c66577d0b01ecea881c1ba",
+            "len":62
+         },
+         "status":"success"
+      }
+   }
+}
+```
+C. Argument -f(--input-file). Read targets from file
+ ```
+python3 jarm_async.py -f alexa500.txt --csv
+```
+###### results (some of the successfuls), output format csv:
+```
+216.105.38.13,sourceforge.net,443,ipaddress,28d28d28d00028d00028d28d28d28d13c6918ce7b872cc0f0b93a8b36eb5f0,28d28d28d00028d00028d28d28d28d,13c6918ce7b872cc0f0b93a8b36eb5f0,62
+216.105.38.13,sourceforge.net,443,hostname,28d28d28d00028d00028d28d28d28d9264f676a44e3d351f05cdbb4541c85e,28d28d28d00028d00028d28d28d28d,9264f676a44e3d351f05cdbb4541c85e,62
+```
+```json
+{
+   "duration":36.053758,
+   "valid targets":500,
+   "success":449,
+   "fails":51
+}
+```
+ 
+#####Results saves to stdout or to file -o (--output-file), statistics always output to stdout.
+
+Output format for records of 2 types: json(default) or csv. JSON format very useful for sending(saving) records to MongoDB, 
+Elasticsearch and other. CSV - is a simple format for saving to files.
+
+Format JSON, examples:
+```json
+{
+   "ip":"173.194.221.91",
+   "port":443,
+   "hostname":"youtube.com",
+   "data":{
+      "jarm":{
+         "ipaddress":{
+            "jarm":"29d3fd00029d29d21c42d43d00041df48f145f65c66577d0b01ecea881c1ba",
+            "cipher_tls":"29d3fd00029d29d21c42d43d00041d",
+            "sha256_of_tls_ext":"f48f145f65c66577d0b01ecea881c1ba",
+            "len":62
+         },
+         "hostname":{
+            "jarm":"27d40d40d29d40d1dc42d43d00041d4689ee210389f4f6b4b5b1b93f92252d",
+            "cipher_tls":"27d40d40d29d40d1dc42d43d00041d",
+            "sha256_of_tls_ext":"4689ee210389f4f6b4b5b1b93f92252d",
+            "len":62
+         },
+         "status":"success"
+      }
+   }
+}
+```
+Keys 'ipaddress' and 'hostname' in nest field 'data' means that: packets were sent containing both hostname(youtube.com) 
+and ipaddress(resolved youtube.com). And calculate JARM for 2 types of packets.
+```json
+{
+   "ip":"82.192.95.175",
+   "port":443,
+   "hostname":"habr.ru",
+   "data":{
+      "jarm":{
+         "any":{
+            "jarm":"15d2ad16d29d29d00015d2ad15d29de87e6567d901388794cb6a875a1928aa",
+            "cipher_tls":"15d2ad16d29d29d00015d2ad15d29d",
+            "sha256_of_tls_ext":"e87e6567d901388794cb6a875a1928aa",
+            "len":62
+         },
+         "status":"success"
+      }
+   }
+}
+```
+Key 'any' in nest field 'data' means that: packets were sent containing both hostname(habr.ru) 
+and ipaddress(resolved habr.ru). JARM is calculated  for 2 types of packets, and JARM with ipaddress == JARM with hostname.
+
+Format CSV(--csv), examples:
+
+```
+173.194.73.101,google.com,443,ipaddress,29d3fd00029d29d21c42d43d00041df48f145f65c66577d0b01ecea881c1ba,29d3fd00029d29d21c42d43d00041d,f48f145f65c66577d0b01ecea881c1ba,62
+173.194.73.101,google.com,443,hostname,27d40d40d29d40d1dc42d43d00041d4689ee210389f4f6b4b5b1b93f92252d,27d40d40d29d40d1dc42d43d00041d,4689ee210389f4f6b4b5b1b93f92252d,62
+173.194.221.190,youtube.com,443,ipaddress,29d3fd00029d29d21c42d43d00041df48f145f65c66577d0b01ecea881c1ba,29d3fd00029d29d21c42d43d00041d,f48f145f65c66577d0b01ecea881c1ba,62
+173.194.221.190,youtube.com,443,hostname,27d40d40d29d40d1dc42d43d00041d4689ee210389f4f6b4b5b1b93f92252d,27d40d40d29d40d1dc42d43d00041d,4689ee210389f4f6b4b5b1b93f92252d,62
+```
+Fields order:
+
+###### ip,hostname,port,type_record,jarm,cipher_tls,sha256_of_tls_ext,len_jarm
+
+where: type_record in ['any', 'hostname', 'ipaddress'], cipher_tls = jarm[:30], sha256_of_tls_ext = jarm[30:]
+
+##### Error results
+```json
+{
+   "port":443,
+   "data":{
+      "jarm":{
+         "status":"unknown-error",
+         "error":"hostname not resolves to IPv4"
+      }
+   },
+   "hostname":"some-unusual-domain.xyz"
+}
+```
+
+##### Filter results
+Arguments: 
+
+`--show-only-success`
+
+Show(save) records only with field 'status' == 'success'
+
+`--filter-jarm=29d3fd00029d29d21c42d43d00041df48f145f65c66577d0b01ecea881c1ba`
+
+Show(save) records only with values of fields 'data.any.jarm' or 'data.hostname.jarm' or 'data.ipaddress.jarm' == value
+
+`--filter-cipher-tls=29d3fd00029d29d21c42d43d00041d`
+
+Like --filter-jarm, but about 'data.[any, hostname, ipaddress].cipher_tls' == value
+
+Note to the arugment: -p(--port). Port in target record, takes priority over option.
+
+_To improve the quality and quantity of responses(result records), it may be necessary to select different time delays(timeouts)._
+
 ### How JARM Works
   
 Before learning how JARM works, it’s important to understand how TLS works. TLS and its predecessor, SSL, are used to encrypt communication for both common applications like Internet browsers, to keep your data secure, and malware, so it can hide in the noise. To initiate a TLS session, a client will send a TLS Client Hello message following the TCP 3-way handshake. This packet and the way in which it is generated is dependent on packages and methods used when building the client application. The server, if accepting TLS connections, will respond with a TLS Server Hello packet.  
@@ -88,3 +276,6 @@ With little to no overlap of the Alexa Top 1M Websites, it should be unlikely fo
 [Mike Brady](https://www.linkedin.com/in/mike-brady-b5293b21/) - Programing and testing  
   
 Rewritten in Python for operational use by [Caleb Yu](https://www.linkedin.com/in/caleb-yu/)
+
+Rewritten in Async Python for operational use by: [Anton Zemlyanushkin](https://www.linkedin.com/in/azemlyanushkin/), 
+[Andrey Skhomenko](https://www.linkedin.com/in/andrey-skhomenko-23a57a198/)
