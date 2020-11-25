@@ -26,12 +26,12 @@ def parse_args():
                         help='Number of send coroutines to use (default: 1024)')
     parser.add_argument('--queue-sleep', dest='queue_sleep', type=int, default=1,
                         help='Sleep duration if the queue is full, default 1 sec. Queue size == senders')
-    parser.add_argument('-tconnect', '--timeout-connection', dest='conn_timeout', type=int, default=7,
-                        help='Set connection timeout for open_connection(asyncio), seconds (default: 7)')
-    parser.add_argument('-tread', '--timeout-read', dest='read_timeout', type=int, default=7,
-                        help='Set connection timeout for reader from connection, seconds (default: 7)')
-    parser.add_argument('-tresolver', '--resolver-timeout', dest='resolver_timeout', type=int, default=3,
-                        help='Set DNS resolutions timeout, seconds (default: 3)')
+    parser.add_argument('-tconnect', '--timeout-connection', dest='conn_timeout', type=int, default=12,
+                        help='Set connection timeout for open_connection(asyncio), seconds (default: 12)')
+    parser.add_argument('-tread', '--timeout-read', dest='read_timeout', type=int, default=12,
+                        help='Set connection timeout for reader from connection, seconds (default: 12)')
+    parser.add_argument('-tresolver', '--resolver-timeout', dest='resolver_timeout', type=int, default=4,
+                        help='Set DNS resolutions timeout, seconds (default: 4)')
     parser.add_argument('-p', '--port', type=int, help='Specify port (default: 443)', default=443)
 
     # region filters
