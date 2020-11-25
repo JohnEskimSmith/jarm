@@ -49,7 +49,7 @@ like 173.194.221.0/24 or with port 173.194.221.0/24:443
 
 #####You can set source targets in 3 ways:
 
-A. Argument --stdin. Read targets from /dev/stdin
+* Argument **--stdin**. Read targets from /dev/stdin
 
 ```
 cat alexa500.txt | python3 jarm_async.py --stdin
@@ -59,7 +59,7 @@ cat alexa500.txt | python3 jarm_async.py --stdin
 zmap 173.194.0.0/16 -B 10M -q -v 1 -p 443 -P1 | python3 jarm_async.py --stdin
 ```
 
-B. Argument -t(--targets). Read targets from arguments
+* Argument **-t(--targets)**. Read targets from arguments
 
 ```
 python3 jarm_async.py -t google.com youtube.com 173.194.221.0/24:443 --show-only-success --show-statistics
@@ -110,7 +110,7 @@ python3 jarm_async.py -t google.com youtube.com 173.194.221.0/24:443 --show-only
    }
 }
 ```
-C. Argument -f(--input-file). Read targets from file
+* Argument **-f(--input-file)**. Read targets from file
  ```
 python3 jarm_async.py -f alexa500.txt --csv
 ```
@@ -130,7 +130,7 @@ python3 jarm_async.py -f alexa500.txt --csv
  
 #####Results saves to stdout or to file -o (--output-file), statistics always output to stdout.
 
-Output format for records of 2 types: json(default) or csv. JSON format very useful for sending(saving) records to MongoDB, 
+Output format for records of 2 types: **json**(default) or **csv**. JSON format very useful for sending(saving) records to MongoDB, 
 Elasticsearch and other. CSV - is a simple format for saving to files.
 
 Format JSON, examples:
@@ -158,7 +158,7 @@ Format JSON, examples:
    }
 }
 ```
-Keys 'ipaddress' and 'hostname' in nest field 'data' means that: packets were sent containing both hostname(youtube.com) 
+Keys **ipaddress** and **hostname** in nest field **data** means that: packets were sent containing both hostname(youtube.com) 
 and ipaddress(resolved youtube.com). And calculate JARM for 2 types of packets.
 ```json
 {
@@ -178,7 +178,7 @@ and ipaddress(resolved youtube.com). And calculate JARM for 2 types of packets.
    }
 }
 ```
-Key 'any' in nest field 'data' means that: packets were sent containing both hostname(habr.ru) 
+Key **any** in nest field **data** means that: packets were sent containing both hostname(habr.ru) 
 and ipaddress(resolved habr.ru). JARM is calculated  for 2 types of packets, and JARM with ipaddress == JARM with hostname.
 
 Format CSV(--csv), examples:
@@ -193,7 +193,7 @@ Fields order:
 
 ###### ip,hostname,port,type_record,jarm,cipher_tls,sha256_of_tls_ext,len_jarm
 
-where: type_record in ['any', 'hostname', 'ipaddress'], cipher_tls = jarm[:30], sha256_of_tls_ext = jarm[30:]
+where: type_record in [**any**, **hostname**, **ipaddress**], cipher_tls = jarm[:30], sha256_of_tls_ext = jarm[30:]
 
 ##### Error results
 ```json
